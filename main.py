@@ -2,7 +2,6 @@ import pygame
 import random
 from asset_loader import load_images, load_image_icon, load_icon
 from audio_loader import load_sounds
-from abc import ABC, abstractmethod
 
 pygame.init()
 pygame.mixer.init()
@@ -92,12 +91,13 @@ class Pipe:
     def get_bottom_rect(self):
         return pygame.Rect(self.x, self.height + self.gap, self.width, self.image.get_height())
 
-class Enemy(ABC):
+class Zeus:
     def __init__(self, x, y, image):
         self.x = x
         self.y = y
         self.image = image
         self.hp = 100
+        self.y_change = 3
         self.lasers = []
         self.width = image.get_width()
         self.height = image.get_height()
@@ -108,26 +108,6 @@ class Enemy(ABC):
         self.hp = hp
         self.appeared = True
 
-    @abstractmethod
-    def update(self):
-        pass
-
-    @abstractmethod
-    def shoot(self, laser_img):
-        pass
-
-    def draw(self, surface):
-        if self.appeared:
-            surface.blit(self.image, (self.x, self.y))
-
-    def get_rect(self):
-        return pygame.Rect(self.x, self.y, self.width, self.height)
-
-class Zeus(Enemy):
-    def __init__(self, x, y, image):
-        super().__init__(x, y, image)
-        self.y_change = 3
-
     def update(self):
         if self.appeared:
             if self.y < screen_height // 2 - 125:
@@ -135,8 +115,12 @@ class Zeus(Enemy):
             elif self.hp <= 0:
                 self.y += 10
 
-    def shoot(self, laser_img):
-        self.lasers.append(ZeusLaser(self.x, self.y + 125, laser_img))
+    def draw(self, surface):
+        if self.appeared:
+            surface.blit(self.image, (self.x, self.y))
+
+    def get_rect(self):
+        return pygame.Rect(self.x, self.y, self.width, self.height)
 
 class Bullet:
     def __init__(self, x, y, image):
@@ -177,7 +161,8 @@ class Thor(Zeus):
         super().__init__(x, y, image)
 
     def shoot(self, laser_img):
-        offsets = [-30, 0, 30]
+        # Menembakkan 3 laser sekaligus dengan sudut berbeda (menyebar)
+        offsets = [-30, 0, 30]  # sudut menyebar ke atas, tengah, bawah
         for offset in offsets:
             self.lasers.append(ThorLaser(self.x, self.y + 125, laser_img, offset))
 
@@ -310,7 +295,7 @@ def main_game():
             # Collision bird-pipe
             for pipe in pipes:
                 if bird.get_rect().colliderect(pipe.get_top_rect()) or bird.get_rect().colliderect(pipe.get_bottom_rect()):
-                    bird.hp -= 20  # Atur pengurangan HP sesuai keinginan
+                    bird.hp -= 20  
                     if bird.hp <= 0:
                         running = False
                         show_game_over_screen()
