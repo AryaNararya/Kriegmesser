@@ -2,6 +2,7 @@ import pygame
 import random
 from asset_loader import load_images, load_image_icon, load_icon
 from audio_loader import load_sounds
+from abc import ABC, abstractmethod
 
 pygame.init()
 pygame.mixer.init()
@@ -91,13 +92,12 @@ class Pipe:
     def get_bottom_rect(self):
         return pygame.Rect(self.x, self.height + self.gap, self.width, self.image.get_height())
 
-class Zeus:
+class Enemy(ABC):
     def __init__(self, x, y, image):
         self.x = x
         self.y = y
         self.image = image
         self.hp = 100
-        self.y_change = 3
         self.lasers = []
         self.width = image.get_width()
         self.height = image.get_height()
@@ -108,12 +108,13 @@ class Zeus:
         self.hp = hp
         self.appeared = True
 
+    @abstractmethod
     def update(self):
-        if self.appeared:
-            if self.y < screen_height // 2 - 125:
-                self.y += self.y_change
-            elif self.hp <= 0:
-                self.y += 10
+        pass
+
+    @abstractmethod
+    def shoot(self, laser_img):
+        pass
 
     def draw(self, surface):
         if self.appeared:
@@ -121,6 +122,21 @@ class Zeus:
 
     def get_rect(self):
         return pygame.Rect(self.x, self.y, self.width, self.height)
+
+class Zeus(Enemy):
+    def __init__(self, x, y, image):
+        super().__init__(x, y, image)
+        self.y_change = 3
+
+    def update(self):
+        if self.appeared:
+            if self.y < screen_height // 2 - 125:
+                self.y += self.y_change
+            elif self.hp <= 0:
+                self.y += 10
+
+    def shoot(self, laser_img):
+        self.lasers.append(ZeusLaser(self.x, self.y + 125, laser_img))
 
 class Bullet:
     def __init__(self, x, y, image):
@@ -161,8 +177,7 @@ class Thor(Zeus):
         super().__init__(x, y, image)
 
     def shoot(self, laser_img):
-        # Menembakkan 3 laser sekaligus dengan sudut berbeda (menyebar)
-        offsets = [-30, 0, 30]  # sudut menyebar ke atas, tengah, bawah
+        offsets = [-30, 0, 30]
         for offset in offsets:
             self.lasers.append(ThorLaser(self.x, self.y + 125, laser_img, offset))
 
