@@ -28,7 +28,7 @@ def load_image_icon(resize_image):
     quit_image = pygame.image.load(os.path.join(ASSET_DIR, "caption", "quit.png"))
     restart_image = pygame.image.load(os.path.join(ASSET_DIR, "caption", "randex.png"))
     gameover_image = pygame.image.load(os.path.join(ASSET_DIR, "caption", "gameover.png"))
-    title_image = pygame.image.load(os.path.join(ASSET_DIR, "caption", "flappy_clash.png"))
+    title_image = pygame.image.load(os.path.join(ASSET_DIR, "caption", "Blitzkrieg.png"))
     start_exit_image = pygame.image.load(os.path.join(ASSET_DIR, "caption", "awal.png"))
     
     pause_image = resize_image(pause_image, 250, 50) 
