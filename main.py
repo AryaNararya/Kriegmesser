@@ -19,7 +19,7 @@ red = (255, 0, 0)
 yellow = (255, 255, 0)
 green = (153, 255, 0)
 
-pygame.display.set_caption('Blitzkrieg')
+pygame.display.set_caption('Flappy Clash')
 icon = load_icon()
 pygame.display.set_icon(icon)
 
@@ -35,7 +35,7 @@ sounds = load_sounds()
 def play_sound(sounds, sound_key, loop=-1):
     if sound_key == "music":
         pygame.mixer.music.load(sounds[sound_key])
-        pygame.mixer.music.play(loop)
+        pygame.mixer.music.play(loop)         
     else:
         sounds[sound_key].play()
 
@@ -312,7 +312,7 @@ def main_game():
             # Collision bird-pipe
             for pipe in pipes:
                 if bird.get_rect().colliderect(pipe.get_top_rect()) or bird.get_rect().colliderect(pipe.get_bottom_rect()):
-                    bird.hp -= 20  
+                    bird.hp -= 0
                     if bird.hp <= 0:
                         running = False
                         show_game_over_screen()
@@ -323,26 +323,22 @@ def main_game():
                     pipes_passed += 1
                     score += 1
 
-            # Enemy muncul setiap 10 pipa dilewati, selang-seling Zeus/Thor
             if pipes_passed > 0 and pipes_passed % 10 == 0 and not enemy.appeared:
                 enemy = enemy_types[enemy_index](screen_width - 310, -enemy_images[enemy_index].get_height(), enemy_images[enemy_index])
                 enemy.appear(100)
                 play_sound(sounds, "zeus_coming", loop=-1)
                 pipes_passed = 0
-                enemy_index = (enemy_index + 1) % len(enemy_types)  # <-- index naik setelah musuh dibuat
+                enemy_index = (enemy_index + 1) % len(enemy_types) 
 
             enemy.update()
             enemy.draw(screen)
 
-            # Zeus laser logic
             if enemy.appeared and enemy.y >= screen_height // 2 - 125 and enemy.hp > 0:
                 if isinstance(enemy, Thor):
-                    # Thor menembak 3 laser sekaligus
                     laser_probability = 60
                     if random.randint(1, laser_probability) == 1:
                         enemy.shoot(zeus_bullet_img)
                 else:
-                    # Zeus menembak 1 laser
                     laser_probability = 60
                     if random.randint(1, laser_probability) == 1:
                         enemy.lasers.append(ZeusLaser(enemy.x, enemy.y + 125, zeus_bullet_img))
