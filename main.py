@@ -19,7 +19,7 @@ red = (255, 0, 0)
 yellow = (255, 255, 0)
 green = (153, 255, 0)
 
-pygame.display.set_caption('Flappy Clash')
+pygame.display.set_caption('Blitzkrieg')
 icon = load_icon()
 pygame.display.set_icon(icon)
 
